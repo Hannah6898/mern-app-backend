@@ -11,14 +11,8 @@ router.get("/user/:uid", placesController.getPlacesByUserId);
 
 router.post('/', placesController.createPlace)
 
-// router.patch('/:pid', (req, res,next)=>{
-//     console.log('PATCH Request in places')
-//     res.json({message:"it works"})
-// })
+router.patch('/:pid', placesController.updatePlace)
 
-// router.delete('/:pid', (req, res,next)=>{
-//     console.log('DELETE Request in places')
-//     res.json({message:"it works"})
-// })
+router.delete('/:pid', placesController.deletePlace)
 
 module.exports = router;
