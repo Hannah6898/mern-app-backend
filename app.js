@@ -1,10 +1,12 @@
 const express = require('express');
 const bodyParder = require ('body-parser');
+const mongoose = require("mongoose");
 
 const placesRoutes = require('./routes/places-routes');
 const userRoutes = require('./routes/user-routes');
 
-const HttpError = require('./model/http-error')
+const HttpError = require('./model/http-error');
+const { AxiosError } = require('axios');
 
 const app = express();
 
@@ -29,4 +31,14 @@ res.status(error.code || 500);
 res.json({message: error.message || 'An unknown error occured'});
 })
 
-app.listen(3000);
+mongoose
+  .connect(
+    "mongodb+srv://hannahosibodu68:AAQTFyw7hschIcJS@cluster0.yertzeh.mongodb.net/locationapp?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(3000);
+    console.log("Connected to database");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
