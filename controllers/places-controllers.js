@@ -2,6 +2,8 @@ const HttpError = require("../model/http-error");
 const { validationResult } = require("express-validator");
 const getCoordsforAddress = require("../util/location");
 const Place = require("../model/place");
+const User = require("../model/user");
+const mongoose = require("mongoose");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -32,7 +34,7 @@ const getPlacesByUserId = async (req, res, next) => {
   } catch (err) {
     return next(
       new HttpError(
-        "Something went wrong! Could not find place by user ID",
+        "Something went wrong! Could not find places by user ID",
         500
       )
     );
@@ -63,14 +65,33 @@ const createPlace = async (req, res, next) => {
   const createdPlace = new Place({
     title: title,
     description: description,
-    image: "link",
+    image:
+      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
     address: address,
     location: coordinates,
     creator: creator,
   });
 
+  let user;
+
   try {
-    await createdPlace.save();
+    user = await User.findById(creator);
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError("Creating place failed, please try again", 500));
+  }
+
+  if (!user) {
+    return next(new HttpError("Could not find user for provided ID", 404));
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdPlace.save({ session: sess });
+    user.places.push(createdPlace);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError("Creating place failed, please try again", 500);
     return next(error);
@@ -113,8 +134,27 @@ const deletePlace = async (req, res, next) => {
   const placeID = req.params.pid;
   let place;
   try {
-    place = await Place.findByIdAndDelete(placeID);
+    //Populate method allows us to refer to a document stored in another collection and to work with data in that existing document of that other collection
+    place = await Place.findById(placeID).populate("creator");
   } catch (err) {
+    return next(new HttpError("Something went wrong! Please try again", 500));
+  }
+
+  if (!place) {
+    return next(
+      new HttpError("Something went wrong! Could not find place by ID", 404)
+    );
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    place.deleteOne({ session: sess });
+    place.creator.places.pull(place);
+    await place.creator.save({ sessions: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    console.log(err);
     return next(
       new HttpError("Something went wrong! Could not delete place", 500)
     );

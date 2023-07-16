@@ -1,11 +1,11 @@
 const HttpError = require("../model/http-error");
 const { validationResult } = require("express-validator");
-const User = require("../model/user"); 
+const User = require("../model/user");
 
 const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.find();
+    users = await User.find({}, "-password");
   } catch (err) {
     return next(
       new HttpError("Something went wrong! Could not find users", 500)
@@ -21,7 +21,7 @@ const signUp = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid input passed, please check data", 422));
   }
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
   try {
@@ -37,8 +37,9 @@ const signUp = async (req, res, next) => {
     name,
     email,
     password,
-    image: "link",
-    places,
+    image:
+      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+    places: [],
   });
 
   try {
@@ -68,7 +69,7 @@ const login = async (req, res, next) => {
 
   if (!loginUser || loginUser.password !== password) {
     return next(
-      new HttpError("Invlaid credentials, couls not log you in", 401)
+      new HttpError("Invlaid credentials, could not log you in", 401)
     );
   }
 
