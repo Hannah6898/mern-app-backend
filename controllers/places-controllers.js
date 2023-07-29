@@ -31,6 +31,7 @@ const getPlacesByUserId = async (req, res, next) => {
   let places;
   try {
     places = await Place.find({ creator: userId });
+    console.log(places)
   } catch (err) {
     return next(
       new HttpError(
@@ -39,7 +40,7 @@ const getPlacesByUserId = async (req, res, next) => {
       )
     );
   }
-  if (!places || places.length === 0) {
+  if (!places) {
     return next(
       new HttpError("Could not find places for provided user id", 404)
     );
