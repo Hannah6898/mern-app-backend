@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParder = require("body-parser");
 const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require ('path');
 
 const placesRoutes = require("./routes/places-routes");
 const userRoutes = require("./routes/user-routes");
@@ -11,10 +13,15 @@ const app = express();
 
 app.use(bodyParder.json());
 
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
   next();
 });
 
@@ -29,6 +36,9 @@ app.use((req, res, next) => {
 
 //Only executes on request that have an error attached
 app.use((error, req, res, next) => {
+  if (req.file) {
+    fs.unlink(req.file.path, (err)=>{console.log(err)});
+  }
   if (res.headerSent) {
     return next(error);
   }

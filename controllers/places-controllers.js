@@ -4,6 +4,7 @@ const getCoordsforAddress = require("../util/location");
 const Place = require("../model/place");
 const User = require("../model/user");
 const mongoose = require("mongoose");
+const fs = require('fs');
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -31,7 +32,6 @@ const getPlacesByUserId = async (req, res, next) => {
   let places;
   try {
     places = await Place.find({ creator: userId });
-    console.log(places)
   } catch (err) {
     return next(
       new HttpError(
@@ -55,6 +55,7 @@ const createPlace = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(HttpError("Invalid input passed, please check data", 422));
   }
+  console.log(req);
   const { title, description, address, creator } = req.body;
 
   let coordinates;
@@ -66,8 +67,7 @@ const createPlace = async (req, res, next) => {
   const createdPlace = new Place({
     title: title,
     description: description,
-    image:
-      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+    image: req.file.path,
     address: address,
     location: coordinates,
     creator: creator,
@@ -78,7 +78,6 @@ const createPlace = async (req, res, next) => {
   try {
     user = await User.findById(creator);
   } catch (err) {
-    console.log(err);
     return next(new HttpError("Creating place failed, please try again", 500));
   }
 
@@ -147,6 +146,8 @@ const deletePlace = async (req, res, next) => {
     );
   }
 
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -155,11 +156,13 @@ const deletePlace = async (req, res, next) => {
     await place.creator.save({ sessions: sess });
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err);
     return next(
       new HttpError("Something went wrong! Could not delete place", 500)
     );
   }
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Place deleted" });
 };

@@ -37,8 +37,7 @@ const signUp = async (req, res, next) => {
     name,
     email,
     password,
-    image:
-      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
+    image: req.file.path,
     places: [],
   });
 
@@ -73,7 +72,10 @@ const login = async (req, res, next) => {
     );
   }
 
-  res.json({ message: "Logged in" , user: loginUser.toObject({ getters: true }) });
+  res.json({
+    message: "Logged in",
+    user: loginUser.toObject({ getters: true }),
+  });
 };
 
 exports.getUsers = getUsers;
