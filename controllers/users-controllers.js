@@ -29,7 +29,7 @@ const signUp = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
-    return next(new HttpError("Somthing went wrong in the database!", 500));
+    return next(new HttpError("Something went wrong in the database!", 500));
   }
   if (existingUser) {
     return next(new HttpError("User exists already, please login", 422));
@@ -93,7 +93,7 @@ const login = async (req, res, next) => {
 
   if (!loginUser) {
     return next(
-      new HttpError("Invlaid credentials, could not log you in", 403)
+      new HttpError("Invalid credentials, could not log you in", 403)
     );
   }
 
@@ -104,7 +104,7 @@ const login = async (req, res, next) => {
   } catch (err) {
     return next(
       new HttpError(
-        "Could not log you in, please check you credntials and try again",
+        "Could not log you in, please check your credentials and try again",
         500
       )
     );
@@ -112,7 +112,7 @@ const login = async (req, res, next) => {
 
   if (!isValidPassword) {
     return next(
-      new HttpError("Invlaid credentials, could not log you in", 401)
+      new HttpError("Invalid credentials, could not log you in", 401)
     );
   }
 
@@ -124,7 +124,7 @@ const login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    return next(new HttpError("Logging infailed, please try again", 500));
+    return next(new HttpError("Logging in failed, please try again", 500));
   }
 
   res.status(201).json({

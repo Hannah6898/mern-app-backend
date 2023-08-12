@@ -14,11 +14,10 @@ async function getCoordsforAddress(address) {
   if (!data || data.status === "ZERO_RESULTS") {
     const error = new HttpError("No coordinates found for the address", 422);
     throw error;
-  };
+  }
 
   const coordinates = data.results[0].geometry.location;
   return coordinates;
-
 }
 
 module.exports = getCoordsforAddress;

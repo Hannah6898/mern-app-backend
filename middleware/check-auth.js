@@ -2,12 +2,11 @@ const HttpError = require("../model/http-error");
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-    if(req.method === 'OPTIONS'){
-        return next();
-    }
+  if (req.method === "OPTIONS") {
+    return next();
+  }
   try {
     //Get token from the request header
-    console.log(req.headers.authorization)
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       throw new Error("Authentication failed");
@@ -19,7 +18,6 @@ module.exports = (req, res, next) => {
     //Continue the journey
     next();
   } catch (err) {
-    console.log(err)
     return next(new HttpError("Authentication failed", 403));
   }
 };

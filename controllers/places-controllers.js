@@ -4,7 +4,7 @@ const getCoordsforAddress = require("../util/location");
 const Place = require("../model/place");
 const User = require("../model/user");
 const mongoose = require("mongoose");
-const fs = require('fs');
+const fs = require("fs");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -35,7 +35,7 @@ const getPlacesByUserId = async (req, res, next) => {
   } catch (err) {
     return next(
       new HttpError(
-        "Something went wrong! Could not find places by user ID",
+        "Something went wrong! Could not find places by user id",
         500
       )
     );
@@ -55,7 +55,6 @@ const createPlace = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(HttpError("Invalid input passed, please check data", 422));
   }
-  console.log(req);
   const { title, description, address } = req.body;
 
   let coordinates;
@@ -82,7 +81,7 @@ const createPlace = async (req, res, next) => {
   }
 
   if (!user) {
-    return next(new HttpError("Could not find user for provided ID", 404));
+    return next(new HttpError("Could not find user for provided id", 404));
   }
 
   try {
@@ -116,10 +115,8 @@ const updatePlace = async (req, res, next) => {
     );
   }
 
-  if(place.creator.toString() !== req.userId){
-    return next(
-      new HttpError("You are not allowed to edit this place", 401)
-    );
+  if (place.creator.toString() !== req.userId) {
+    return next(new HttpError("You are not allowed to edit this place", 401));
   }
 
   place.title = title;
@@ -148,19 +145,12 @@ const deletePlace = async (req, res, next) => {
 
   if (!place) {
     return next(
-      new HttpError("Something went wrong! Could not find place by ID", 404)
+      new HttpError("Something went wrong! Could not find place by id", 404)
     );
   }
 
-  console.log(place.creator.id)
-  console.log(req.userId)
-
-
-
-  if(place.creator.id !== req.userData.userId){
-    return next(
-      new HttpError("You are not allowed to delete this place", 401)
-    );
+  if (place.creator.id !== req.userData.userId) {
+    return next(new HttpError("You are not allowed to delete this place", 401));
   }
   const imagePath = place.image;
 
