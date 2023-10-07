@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
       throw new Error("Authentication failed");
     }
     //Verfiy that the token is one created by the server
-    const decodedToken = jwt.verify(token, "supersecret_dont_share");
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
     //Get the user ID to which this token belongs and add to request
     req.userData = { userId: decodedToken.userId };
     //Continue the journey

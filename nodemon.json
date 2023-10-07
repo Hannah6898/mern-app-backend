@@ -1,0 +1,9 @@
+{
+  "env": {
+    "DB_USER": "hannahosibodu68",
+    "DB_PASSWORD": "AAQTFyw7hschIcJS",
+    "DB_NAME": "locationapp",
+    "GOOGLE_API_KEY": "AIzaSyBAJ6ntx-XiqT4j213ch_5aqRStktsLwdM",
+    "JWT_KEY": "supersecret_dont_share"
+  }
+}
