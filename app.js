@@ -35,9 +35,10 @@ app.use((req, res, next) => {
 });
 
 //Only executes on request that have an error attached
+
 app.use((error, req, res, next) => {
   if (req.file) {
-    fs.unlink(req.file.path, (err) => {
+    fs.unlink(req.file.path, err => {
       console.log(err);
     });
   }
@@ -45,8 +46,10 @@ app.use((error, req, res, next) => {
     return next(error);
   }
   res.status(error.code || 500);
-  res.json({ message: error.message || "An unknown error occured" });
+  console.log(error)
+  res.json({ message: error.message || 'An unknown error occurred!' });
 });
+
 
 mongoose
   .connect(
