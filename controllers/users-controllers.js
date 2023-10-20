@@ -21,6 +21,7 @@ const getUsers = async (req, res, next) => {
 const signUp = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log(errors)
     return next(new HttpError("Invalid input passed, please check data", 422));
   }
   const { name, email, password } = req.body;
@@ -29,6 +30,7 @@ const signUp = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
+    console.log(err)
     return next(new HttpError("Something went wrong in the database!", 500));
   }
   if (existingUser) {
@@ -39,6 +41,7 @@ const signUp = async (req, res, next) => {
   try {
     hashPassword = await bcrypt.hash(password, 12);
   } catch (err) {
+    console.log(err)
     return next(new HttpError("Could not create user please try again", 500));
   }
 
@@ -53,6 +56,7 @@ const signUp = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
+    console.log(err)
     return next(new HttpError("Sign up failed, please try again", 500));
   }
 
@@ -64,6 +68,7 @@ const signUp = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
+    console.log(err)
     return next(new HttpError("Sign up failed, please try again", 500));
   }
 
