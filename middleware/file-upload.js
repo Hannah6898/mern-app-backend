@@ -12,7 +12,7 @@ const fileUpload = multer({
   //Where will the image be stored
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/images");
+      cb(null, "/uploads/images");
     },
     filename: (req, file, cb) => {
       const ext = MIME_TYPE_MAP[file.mimetype];
